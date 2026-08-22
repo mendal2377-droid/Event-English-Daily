@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "ON STAGE",
+    "slug": "on-stage",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "onstage",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#07080f",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.onstage.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundColor": "#07080f"
+      },
+      "package": "com.onstage.app",
+      "versionCode": 1
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#07080f"
+        }
+      ],
+      "expo-font",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "ON STAGE uses the microphone so you can practise speaking English aloud.",
+          "speechRecognitionPermission": "ON STAGE uses speech recognition to transcribe your spoken English practice.",
+          "androidSpeechServicePackages": ["com.google.android.googlequicksearchbox"]
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

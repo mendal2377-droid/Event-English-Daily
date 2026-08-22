@@ -1,0 +1,186 @@
+// 30-Day Speaking Plan — a no-API curriculum that sequences the existing
+// scenarios + shadowing drills into a countdown toward a trade show abroad.
+// Runs entirely in Mock Mode; no key required.
+
+export interface PlanDay {
+  day: number;
+  phase: string;
+  phaseCn: string;
+  title: string;
+  titleCn: string;
+  type: 'scenario' | 'shadow';
+  scenarioId?: string; // present when type === 'scenario'
+  tip: string;
+  tipCn: string;
+}
+
+export const PLAN_LENGTH = 30;
+
+export const THIRTY_DAY_PLAN: PlanDay[] = [
+  // ── Phase 1 — First impressions (Days 1–7) ──────────────────────────────
+  { day: 1, phase: 'First Impressions', phaseCn: '第一印象',
+    title: 'Your 30-Second Self-Intro', titleCn: '30秒自我介绍',
+    type: 'scenario', scenarioId: 'self-introduction',
+    tip: 'The single most useful line to own. Name + role + company in one breath.',
+    tipCn: '最实用的一句话。名字+职位+公司，一口气说完。' },
+  { day: 2, phase: 'First Impressions', phaseCn: '第一印象',
+    title: 'Shadowing warm-up', titleCn: '跟读热身',
+    type: 'shadow',
+    tip: 'Say every phrase out loud. Match the rhythm, not just the words.',
+    tipCn: '每句都大声说出来。模仿节奏，而不只是单词。' },
+  { day: 3, phase: 'First Impressions', phaseCn: '第一印象',
+    title: 'Networking Reception', titleCn: '招待会社交',
+    type: 'scenario', scenarioId: 'networking-reception',
+    tip: 'Small talk is tennis — always hit the ball back with a question.',
+    tipCn: '寒暄就像打网球——永远用一个问题把球打回去。' },
+  { day: 4, phase: 'First Impressions', phaseCn: '第一印象',
+    title: 'Client Concept Pitch', titleCn: '向客户提案',
+    type: 'scenario', scenarioId: 'client-pitch',
+    tip: 'Lead with what makes you different, then back it with a number.',
+    tipCn: '先说你的不同之处，再用数字支撑。' },
+  { day: 5, phase: 'First Impressions', phaseCn: '第一印象',
+    title: 'Shadowing drill', titleCn: '跟读训练',
+    type: 'shadow',
+    tip: 'Re-run yesterday\'s new phrases until they feel automatic.',
+    tipCn: '重复昨天的新短语，直到脱口而出。' },
+  { day: 6, phase: 'First Impressions', phaseCn: '第一印象',
+    title: 'Booth Visitor Qualification', titleCn: '展位访客甄别',
+    type: 'scenario', scenarioId: 'booth-qualification',
+    tip: 'Sort real buyers from browsers in one question.',
+    tipCn: '用一个问题区分真买家和随便看看的人。' },
+  { day: 7, phase: 'First Impressions', phaseCn: '第一印象',
+    title: 'Week 1 review — shadowing', titleCn: '第一周复盘 — 跟读',
+    type: 'shadow',
+    tip: 'A whole week in. Your saved phrases are building — speak them all.',
+    tipCn: '第一周完成。你的短语库在积累——把它们全说一遍。' },
+
+  // ── Phase 2 — Deals & numbers (Days 8–14) ───────────────────────────────
+  { day: 8, phase: 'Deals & Numbers', phaseCn: '谈判与数字',
+    title: 'Sponsorship Pitch', titleCn: '赞助商推介',
+    type: 'scenario', scenarioId: 'sponsorship-pitch',
+    tip: 'Lead with audience size and quality together.',
+    tipCn: '开场同时呈现受众的规模和质量。' },
+  { day: 9, phase: 'Deals & Numbers', phaseCn: '谈判与数字',
+    title: 'Budget Presentation', titleCn: '预算汇报',
+    type: 'scenario', scenarioId: 'budget-presentation',
+    tip: 'When something is non-negotiable, give the factual reason immediately.',
+    tipCn: '当某项不可协商时，立即给出事实依据。' },
+  { day: 10, phase: 'Deals & Numbers', phaseCn: '谈判与数字',
+    title: 'Shadowing drill', titleCn: '跟读训练',
+    type: 'shadow',
+    tip: 'Numbers and money words — practise saying them cleanly.',
+    tipCn: '数字和金钱相关词汇——练习清晰地说出来。' },
+  { day: 11, phase: 'Deals & Numbers', phaseCn: '谈判与数字',
+    title: 'Vendor Negotiation', titleCn: '与供应商谈判',
+    type: 'scenario', scenarioId: 'vendor-negotiation',
+    tip: 'Propose payment terms instead of only asking for a discount.',
+    tipCn: '提出付款条款，而不是一味要求降价。' },
+  { day: 12, phase: 'Deals & Numbers', phaseCn: '谈判与数字',
+    title: 'Post-Show Lead Follow-Up', titleCn: '展后线索跟进',
+    type: 'scenario', scenarioId: 'lead-follow-up',
+    tip: 'Every follow-up needs a specific hook — a sample, a spec, a promise.',
+    tipCn: '每次跟进都要有具体切入点——样品、规格或承诺。' },
+  { day: 13, phase: 'Deals & Numbers', phaseCn: '谈判与数字',
+    title: 'Shadowing drill', titleCn: '跟读训练',
+    type: 'shadow',
+    tip: 'Deal-closing phrases: middle ground, move this forward, next step.',
+    tipCn: '成交短语：middle ground、move this forward、next step。' },
+  { day: 14, phase: 'Deals & Numbers', phaseCn: '谈判与数字',
+    title: 'Week 2 review — Self-Intro again', titleCn: '第二周复盘 — 再练自我介绍',
+    type: 'scenario', scenarioId: 'self-introduction',
+    tip: 'Two weeks stronger. Notice how much smoother your intro is now.',
+    tipCn: '进步了两周。感受一下你的自我介绍现在流畅了多少。' },
+
+  // ── Phase 3 — Build-up & production (Days 15–21) ────────────────────────
+  { day: 15, phase: 'Build-Up', phaseCn: '搭建期',
+    title: 'Venue Walkthrough', titleCn: '带客户参观场地',
+    type: 'scenario', scenarioId: 'venue-walkthrough',
+    tip: 'Lead the tour: "Let me walk you through the space."',
+    tipCn: '引导参观："Let me walk you through the space."' },
+  { day: 16, phase: 'Build-Up', phaseCn: '搭建期',
+    title: 'AV & Tech Briefing', titleCn: '音视频技术简报',
+    type: 'scenario', scenarioId: 'av-briefing',
+    tip: 'Always give specs with units — "12 metres wide, 8 to the grid."',
+    tipCn: '规格永远带单位——"12 metres wide, 8 to the grid."' },
+  { day: 17, phase: 'Build-Up', phaseCn: '搭建期',
+    title: 'Shadowing drill', titleCn: '跟读训练',
+    type: 'shadow',
+    tip: 'Production vocabulary: rigging, grid, rider, ambient light.',
+    tipCn: '制作术语：rigging、grid、rider、ambient light。' },
+  { day: 18, phase: 'Build-Up', phaseCn: '搭建期',
+    title: 'Catering Coordination', titleCn: '餐饮团队协调',
+    type: 'scenario', scenarioId: 'catering-coordination',
+    tip: 'Confirm exact numbers — "280 covers", not "a lot of guests."',
+    tipCn: '确认准确数字——"280 covers"，而不是"很多客人"。' },
+  { day: 19, phase: 'Build-Up', phaseCn: '搭建期',
+    title: 'Show Services Desk', titleCn: '展会服务台办事',
+    type: 'scenario', scenarioId: 'services-desk',
+    tip: 'Lead with booth number, then the exact spec you need.',
+    tipCn: '先报展位号，再说你需要的准确规格。' },
+  { day: 20, phase: 'Build-Up', phaseCn: '搭建期',
+    title: 'Customs & Freight Crisis', titleCn: '清关物流危机',
+    type: 'scenario', scenarioId: 'customs-freight-crisis',
+    tip: 'Get the specific blocker before promising a fix.',
+    tipCn: '在承诺解决方案前，先弄清具体卡在哪里。' },
+  { day: 21, phase: 'Build-Up', phaseCn: '搭建期',
+    title: 'Stage Manager Handoff', titleCn: '交接给舞台监督',
+    type: 'scenario', scenarioId: 'stage-manager-handoff',
+    tip: 'State which segment is the "anchor" everyone protects.',
+    tipCn: '说明哪个环节是所有人都要保护的"anchor"。' },
+
+  // ── Phase 4 — Show week (Days 22–30) ────────────────────────────────────
+  { day: 22, phase: 'Show Week', phaseCn: '展会周',
+    title: 'Staff Briefing', titleCn: '开门前员工简报',
+    type: 'scenario', scenarioId: 'staff-briefing',
+    tip: 'Open with a countdown: "Doors open in 45 minutes."',
+    tipCn: '以倒计时开场："Doors open in 45 minutes."' },
+  { day: 23, phase: 'Show Week', phaseCn: '展会周',
+    title: 'Technical Q&A at the Booth', titleCn: '展位技术问答',
+    type: 'scenario', scenarioId: 'technical-qa-booth',
+    tip: 'Never guess a number — "let me confirm with our engineer."',
+    tipCn: '永远不要猜数字——"let me confirm with our engineer."' },
+  { day: 24, phase: 'Show Week', phaseCn: '展会周',
+    title: 'Shadowing drill', titleCn: '跟读训练',
+    type: 'shadow',
+    tip: 'Booth phrases you\'ll use hourly in Germany. Own them.',
+    tipCn: '在德国你每小时都会用到的展位短语。把它们练熟。' },
+  { day: 25, phase: 'Show Week', phaseCn: '展会周',
+    title: 'VIP Guest Issue', titleCn: '处理VIP宾客问题',
+    type: 'scenario', scenarioId: 'vip-guest-handling',
+    tip: 'Empathy plus immediate action: "I\'ll fix this right now."',
+    tipCn: '同理心加即时行动："I\'ll fix this right now."' },
+  { day: 26, phase: 'Show Week', phaseCn: '展会周',
+    title: 'Day-Of Crisis', titleCn: '活动当天突发危机',
+    type: 'scenario', scenarioId: 'day-of-crisis',
+    tip: 'Clear ownership — say "I will", never "someone should."',
+    tipCn: '明确担责——说"I will"，绝不说"someone should"。' },
+  { day: 27, phase: 'Show Week', phaseCn: '展会周',
+    title: 'Media Interview at the Booth', titleCn: '展位媒体采访',
+    type: 'scenario', scenarioId: 'media-interview',
+    tip: 'Hand the journalist one quotable number.',
+    tipCn: '递给记者一个可引用的数字。' },
+  { day: 28, phase: 'Show Week', phaseCn: '展会周',
+    title: 'Speaker Green Room', titleCn: '嘉宾候场室应对',
+    type: 'scenario', scenarioId: 'speaker-handling',
+    tip: 'Reassure first, then give detail. Calm is contagious.',
+    tipCn: '先安抚，再给细节。冷静会传染。' },
+  { day: 29, phase: 'Show Week', phaseCn: '展会周',
+    title: 'Post-Event Debrief', titleCn: '活动后复盘',
+    type: 'scenario', scenarioId: 'post-event-debrief',
+    tip: 'Acknowledge the issue first, then offer a specific solution.',
+    tipCn: '先承认问题，再给出具体解决方案。' },
+  { day: 30, phase: 'Show Week', phaseCn: '展会周',
+    title: 'Final run — You\'re ready', titleCn: '最后一练 — 你准备好了',
+    type: 'scenario', scenarioId: 'self-introduction',
+    tip: 'One last self-intro. Walk into Germany owning the room. Viel Erfolg!',
+    tipCn: '最后一次自我介绍。自信地走进德国的会场。祝你成功！' },
+];
+
+export function getPlanDay(day: number): PlanDay | undefined {
+  return THIRTY_DAY_PLAN.find((d) => d.day === day);
+}
+
+export function getPhaseForDay(day: number): { phase: string; phaseCn: string } {
+  const d = getPlanDay(day);
+  return d ? { phase: d.phase, phaseCn: d.phaseCn } : { phase: '', phaseCn: '' };
+}
