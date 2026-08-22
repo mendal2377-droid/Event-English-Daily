@@ -45,6 +45,7 @@ export default function Settings() {
     dailyGoal, setDailyGoal,
     hintsOn, setHintsOn,
     slowMode, setSlowMode,
+    autoSpeak, setAutoSpeak,
     showDate, setShowDate,
     showName, setShowName,
   } = useApp();
@@ -285,6 +286,13 @@ export default function Settings() {
               {chineseAssist && <Text style={styles.rowCn}>开场提示（含中文含义）</Text>}
             </View>
             <Toggle value={hintsOn} onToggle={() => setHintsOn(!hintsOn)} />
+          </View>
+          <View style={styles.row}>
+            <View>
+              <Text style={styles.rowEn}>Auto-play AI voice</Text>
+              {chineseAssist && <Text style={styles.rowCn}>自动朗读 AI 回复</Text>}
+            </View>
+            <Toggle value={autoSpeak} onToggle={() => setAutoSpeak(!autoSpeak)} />
           </View>
           <View style={styles.row}>
             <View>

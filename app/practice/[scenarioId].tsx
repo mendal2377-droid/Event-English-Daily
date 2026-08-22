@@ -15,6 +15,7 @@ import { sendMessage, getOpeningMessage, Message, AIResponse } from '../../lib/a
 import { getMockResult } from '../../lib/mock';
 import { countProPhrases, computeGrade } from '../../lib/score';
 import { saveSession } from '../../lib/storage';
+import { speakText } from '../../lib/tts';
 import { useApp } from '../../context/AppContext';
 
 const MAX_TURNS = 6;
@@ -31,7 +32,7 @@ interface ChatMessage {
 export default function Practice() {
   const { scenarioId } = useLocalSearchParams<{ scenarioId: string }>();
   const router = useRouter();
-  const { apiMode, apiKey, hintsOn } = useApp();
+  const { apiMode, apiKey, hintsOn, slowMode, autoSpeak } = useApp();
 
   const scenario = getScenarioById(scenarioId ?? '');
   const scrollRef = useRef<ScrollView>(null);
@@ -53,6 +54,7 @@ export default function Practice() {
     setMessages([{ id: 'opening', type: 'ai', text: opening }]);
     setApiHistory([{ role: 'ai', text: opening }]);
     setHints(getScenarioHints(scenario.id, 2));
+    if (autoSpeak) speakText(opening, slowMode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scenarioId, apiMode]);
 
@@ -101,6 +103,7 @@ export default function Practice() {
       };
       setMessages((prev) => [...prev, aiMsg]);
       setApiHistory((prev) => [...prev, { role: 'ai', text: response.aiText }]);
+      if (autoSpeak) speakText(response.aiText, slowMode);
 
       const nextTurn = turnIndex + 1;
       setTurnIndex(nextTurn);

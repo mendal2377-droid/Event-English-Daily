@@ -14,6 +14,8 @@ interface AppContextValue {
   setHintsOn: (val: boolean) => void;
   slowMode: boolean;
   setSlowMode: (val: boolean) => void;
+  autoSpeak: boolean;
+  setAutoSpeak: (val: boolean) => void;
   showDate: string;
   setShowDate: (val: string) => void;
   showName: string;
@@ -32,6 +34,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     hintsOn: true,
     slowMode: false,
     dailyReminder: true,
+    autoSpeak: true,
     showDate: '',
     showName: '',
   });
@@ -65,6 +68,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setHintsOn: (v) => updateSetting('hintsOn', v),
         slowMode: settings.slowMode,
         setSlowMode: (v) => updateSetting('slowMode', v),
+        autoSpeak: settings.autoSpeak,
+        setAutoSpeak: (v) => updateSetting('autoSpeak', v),
         showDate: settings.showDate,
         setShowDate: (v) => updateSetting('showDate', v),
         showName: settings.showName,

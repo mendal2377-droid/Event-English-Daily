@@ -17,6 +17,8 @@ export interface AppSettings {
   hintsOn: boolean;
   slowMode: boolean;
   dailyReminder: boolean;
+  /** auto-speak the AI's reply aloud when it arrives */
+  autoSpeak: boolean;
   /** ISO date (yyyy-mm-dd) of the user's next show, or '' if not set */
   showDate: string;
   showName: string;
@@ -75,6 +77,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   hintsOn: true,
   slowMode: false,
   dailyReminder: true,
+  autoSpeak: true,
   showDate: '',
   showName: '',
 };
