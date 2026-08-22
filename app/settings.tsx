@@ -106,7 +106,7 @@ export default function Settings() {
 
   return (
     <SafeAreaView style={styles.bg} edges={['top']}>
-      <NavBar rightLabel="⚙ Settings" rightLabelCn="设置" rightHighlighted />
+      <NavBar rightLabel="⚙ Settings" rightLabelCn="设置" rightHighlighted hideSettings />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
         <Text style={styles.h1}>Settings</Text>
