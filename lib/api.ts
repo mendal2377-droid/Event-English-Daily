@@ -1,6 +1,7 @@
 import { Scenario } from '../constants/scenarios';
 import { getMockTurn, getMockOpening } from './mock';
 import { buildSystemPrompt } from './systemPrompts';
+import { PROXY_CHAT_URL } from './config';
 
 export interface Message {
   role: 'ai' | 'user';
@@ -14,13 +15,12 @@ export interface AIResponse {
   coachType: 'phrasing' | 'positive' | 'vocabulary';
 }
 
-export type ApiMode = 'mock' | 'claude' | 'openai' | 'deepseek';
+// 'shared' = the built-in DeepSeek proxy (one key for the whole app, no setup).
+export type ApiMode = 'shared' | 'mock' | 'claude' | 'openai' | 'deepseek';
 
-export function getOpeningMessage(scenarioId: string, mode: ApiMode): string {
-  if (mode === 'mock') {
-    return getMockOpening(scenarioId);
-  }
-  return "Hello! Let's begin our practice session.";
+export function getOpeningMessage(scenarioId: string, _mode: ApiMode): string {
+  // Every scenario gets its strong, in-character opening line regardless of mode.
+  return getMockOpening(scenarioId);
 }
 
 export async function sendMessage(params: {
@@ -35,6 +35,15 @@ export async function sendMessage(params: {
 
   if (mode === 'mock') {
     return getMockResponse(scenario.id, turnIndex);
+  }
+
+  if (mode === 'shared') {
+    try {
+      return await callProxy(scenario, history, userText);
+    } catch {
+      // Offline / proxy down → degrade gracefully to the scripted turn
+      return getMockResponse(scenario.id, turnIndex);
+    }
   }
 
   if (mode === 'claude') {
@@ -113,6 +122,32 @@ async function callClaude(
   const data = await response.json();
   const content = data.content?.[0]?.text ?? '';
   return parseAIResponse(content);
+}
+
+// The built-in shared DeepSeek proxy (api/chat.js on Vercel) — no key on device.
+async function callProxy(
+  scenario: Scenario,
+  history: Message[],
+  userText: string,
+): Promise<AIResponse> {
+  const system = buildSystemPrompt(scenario);
+  const messages = [
+    ...history.map((m) => ({
+      role: m.role === 'ai' ? 'assistant' : 'user',
+      content: m.text,
+    })),
+    { role: 'user', content: userText },
+  ];
+
+  const response = await fetch(PROXY_CHAT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ system, messages }),
+  });
+
+  if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
+  const data = await response.json();
+  return parseAIResponse(data.content ?? '');
 }
 
 // Works for any OpenAI-compatible chat API (OpenAI, DeepSeek, etc.)

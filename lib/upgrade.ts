@@ -4,6 +4,7 @@
 // Uses the selected AI provider; falls back to a curated Mock lookup.
 
 import { ApiMode } from './api';
+import { PROXY_CHAT_URL } from './config';
 
 export interface UpgradeResult {
   upgraded: string;   // the professional English line
@@ -85,6 +86,25 @@ export async function upgradePhrase(params: {
   const { input, mode, apiKey } = params;
   const text = input.trim();
   if (!text) return mockUpgrade('');
+
+  // Built-in shared DeepSeek proxy — no key needed
+  if (mode === 'shared') {
+    try {
+      const res = await fetch(PROXY_CHAT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system: SYSTEM_PROMPT,
+          messages: [{ role: 'user', content: text }],
+        }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const data = await res.json();
+      return parseUpgrade(data.content ?? '', false);
+    } catch {
+      return mockUpgrade(text);
+    }
+  }
 
   if (mode === 'mock' || !apiKey) {
     return mockUpgrade(text);

@@ -4,8 +4,8 @@ import { AppSettings, loadSettings, saveSettings } from '../lib/storage';
 interface AppContextValue {
   chineseAssist: boolean;
   setChineseAssist: (val: boolean) => void;
-  apiMode: 'mock' | 'claude' | 'openai' | 'deepseek';
-  setApiMode: (val: 'mock' | 'claude' | 'openai' | 'deepseek') => void;
+  apiMode: 'shared' | 'mock' | 'claude' | 'openai' | 'deepseek';
+  setApiMode: (val: 'shared' | 'mock' | 'claude' | 'openai' | 'deepseek') => void;
   apiKey: string;
   setApiKey: (val: string) => void;
   dailyGoal: number;
@@ -28,7 +28,7 @@ const AppContext = createContext<AppContextValue>({} as AppContextValue);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<AppSettings>({
     chineseAssist: true,
-    apiMode: 'mock',
+    apiMode: 'shared',
     apiKey: '',
     dailyGoal: 3,
     hintsOn: true,

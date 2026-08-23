@@ -18,10 +18,11 @@ const GOALS = [
 ];
 
 const API_MODES = [
-  { id: 'deepseek' as const, label: 'DeepSeek', desc: 'deepseek-chat · cheap, works in China · Recommended' },
-  { id: 'claude' as const, label: 'Anthropic Claude', desc: 'claude-sonnet · needs VPN in China' },
-  { id: 'openai' as const, label: 'OpenAI GPT-4o', desc: 'gpt-4o · needs VPN in China' },
-  { id: 'mock' as const, label: '🧪 Mock Mode / 测试模式', desc: 'Pre-written responses, no key needed' },
+  { id: 'shared' as const, label: '✨ Built-in AI (DeepSeek)', desc: 'No key needed · always on · Recommended' },
+  { id: 'deepseek' as const, label: 'DeepSeek — my own key', desc: 'Use your own DeepSeek key instead' },
+  { id: 'claude' as const, label: 'Anthropic Claude', desc: 'Your own key · needs VPN in China' },
+  { id: 'openai' as const, label: 'OpenAI GPT-4o', desc: 'Your own key · needs VPN in China' },
+  { id: 'mock' as const, label: '🧪 Mock Mode / 离线测试', desc: 'Scripted, works offline' },
 ];
 
 const SHOW_PRESETS = [
@@ -219,7 +220,7 @@ export default function Settings() {
             </Pressable>
           ))}
 
-          {apiMode !== 'mock' && (
+          {(apiMode === 'claude' || apiMode === 'openai' || apiMode === 'deepseek') && (
             <>
               <View style={styles.keyRow}>
                 <TextInput

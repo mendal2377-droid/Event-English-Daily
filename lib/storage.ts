@@ -11,7 +11,7 @@ export interface Phrase {
 
 export interface AppSettings {
   chineseAssist: boolean;
-  apiMode: 'mock' | 'claude' | 'openai' | 'deepseek';
+  apiMode: 'shared' | 'mock' | 'claude' | 'openai' | 'deepseek';
   apiKey: string;
   dailyGoal: number;
   hintsOn: boolean;
@@ -79,7 +79,7 @@ export interface PlanState {
 
 const DEFAULT_SETTINGS: AppSettings = {
   chineseAssist: true,
-  apiMode: 'mock',
+  apiMode: 'shared',
   apiKey: '',
   dailyGoal: 3,
   hintsOn: true,
