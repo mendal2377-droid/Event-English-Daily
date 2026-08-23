@@ -55,7 +55,13 @@ const KEYS = {
   daily: '@onstage/daily',
   glossaryCustom: '@onstage/glossary_custom',
   upgradeCount: '@onstage/upgrade_count',
+  shadowDaily: '@onstage/shadow_daily',
 } as const;
+
+export interface DailyShadow {
+  date: string;
+  items: Array<{ en: string; cn: string }>;
+}
 
 export interface CustomGlossaryTerm {
   term: string;
@@ -232,6 +238,27 @@ export async function incrementUpgradeCount(): Promise<number> {
   const next = cur + 1;
   await AsyncStorage.setItem(KEYS.upgradeCount, String(next));
   return next;
+}
+
+// ── Daily AI-generated shadowing sentences ──────────────────────────────────
+
+export async function loadDailyShadow(): Promise<DailyShadow | null> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.shadowDaily);
+    return raw ? (JSON.parse(raw) as DailyShadow) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveDailyShadow(items: Array<{ en: string; cn: string }>): Promise<DailyShadow> {
+  const data: DailyShadow = { date: todayISO(), items };
+  await AsyncStorage.setItem(KEYS.shadowDaily, JSON.stringify(data));
+  return data;
+}
+
+export function isTodayISO(date: string): boolean {
+  return date === todayISO();
 }
 
 export async function loadSession(id: string): Promise<SessionData | null> {

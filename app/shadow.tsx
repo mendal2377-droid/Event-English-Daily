@@ -8,7 +8,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors } from '../constants/colors';
 import { SCENARIOS } from '../constants/scenarios';
-import { loadPhrases, Phrase } from '../lib/storage';
+import { loadPhrases, Phrase, loadDailyShadow, saveDailyShadow, isTodayISO } from '../lib/storage';
+import { generateDailyShadow } from '../lib/shadowGen';
 import { speakText, stopSpeaking } from '../lib/tts';
 import { useApp } from '../context/AppContext';
 
@@ -30,29 +31,52 @@ const ROUND_SIZE = 10;
 
 export default function Shadow() {
   const router = useRouter();
-  const { chineseAssist, slowMode } = useApp();
+  const { chineseAssist, slowMode, apiMode, apiKey } = useApp();
   const [bankPhrases, setBankPhrases] = useState<Phrase[]>([]);
+  const [aiItems, setAiItems] = useState<ShadowItem[]>([]);
+  const [freshToday, setFreshToday] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [index, setIndex] = useState(0);
   const [saidCount, setSaidCount] = useState(0);
   const [speaking, setSpeaking] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  async function refreshDaily(force: boolean) {
+    if (apiMode === 'mock') return;
+    setGenerating(true);
+    const gen = await generateDailyShadow(apiMode, apiKey);
+    if (gen.length > 0) {
+      await saveDailyShadow(gen);
+      setAiItems(gen);
+      setFreshToday(true);
+      if (force) { setIndex(0); setSaidCount(0); }
+    }
+    setGenerating(false);
+  }
+
   useEffect(() => {
-    loadPhrases().then((p) => {
-      setBankPhrases(p);
+    (async () => {
+      const [phrases, cached] = await Promise.all([loadPhrases(), loadDailyShadow()]);
+      setBankPhrases(phrases);
+      if (cached && isTodayISO(cached.date) && cached.items.length > 0) {
+        setAiItems(cached.items);
+        setFreshToday(true);
+      } else {
+        // Generate today's fresh set in the background (best effort)
+        refreshDaily(false);
+      }
       setLoaded(true);
-    });
-    return () => {
-      stopSpeaking();
-    };
+    })();
+    return () => { stopSpeaking(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Round = user's saved phrases first, topped up with scenario hints
+  // Round = today's AI sentences first, then saved phrases, then scenario hints
   const items: ShadowItem[] = useMemo(() => {
     if (!loaded) return [];
     const fromBank: ShadowItem[] = bankPhrases.map((p) => ({ en: p.en, cn: p.cn }));
     const fromHints: ShadowItem[] = SCENARIOS.flatMap((s) => s.hints);
-    const combined = [...shuffle(fromBank), ...shuffle(fromHints)];
+    const combined = [...shuffle(aiItems), ...shuffle(fromBank), ...shuffle(fromHints)];
     // De-dupe by English text
     const seen = new Set<string>();
     const unique = combined.filter((it) => {
@@ -61,7 +85,7 @@ export default function Shadow() {
       return true;
     });
     return unique.slice(0, ROUND_SIZE);
-  }, [loaded, bankPhrases]);
+  }, [loaded, bankPhrases, aiItems]);
 
   const current = items[index];
   const done = loaded && (index >= items.length || items.length === 0);
@@ -102,8 +126,23 @@ export default function Shadow() {
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>🗣️ Shadowing</Text>
-          {chineseAssist && <Text style={styles.headerCn}>跟读训练 — 听一句，大声跟读一句</Text>}
+          {generating ? (
+            <Text style={styles.freshGen}>✨ Generating today's fresh set…</Text>
+          ) : freshToday ? (
+            <Text style={styles.freshOn}>✨ Fresh AI set today{chineseAssist ? ' · 今日新句' : ''}</Text>
+          ) : (
+            chineseAssist && <Text style={styles.headerCn}>跟读训练 — 听一句，大声跟读一句</Text>
+          )}
         </View>
+        {apiMode !== 'mock' && (
+          <TouchableOpacity
+            onPress={() => refreshDaily(true)}
+            disabled={generating}
+            style={styles.newSetBtn}
+          >
+            <Text style={styles.newSetText}>{generating ? '…' : '🔄 New'}</Text>
+          </TouchableOpacity>
+        )}
         {!done && items.length > 0 && (
           <Text style={styles.counter}>{Math.min(index + 1, items.length)}/{items.length}</Text>
         )}
@@ -192,6 +231,13 @@ const styles = StyleSheet.create({
   backIcon: { fontSize: 14, color: Colors.muted },
   headerTitle: { fontSize: 15, fontWeight: '700', color: Colors.text },
   headerCn: { fontSize: 10, color: Colors.muted, marginTop: 1 },
+  freshOn: { fontSize: 10, color: Colors.green, marginTop: 1, fontWeight: '600' },
+  freshGen: { fontSize: 10, color: Colors.cyan, marginTop: 1 },
+  newSetBtn: {
+    backgroundColor: '#00d4c812', borderWidth: 1, borderColor: '#00d4c830',
+    borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5,
+  },
+  newSetText: { fontSize: 11, color: Colors.cyan, fontWeight: '600' },
   counter: { fontSize: 12, color: Colors.orange, fontWeight: '600' },
 
   body: { flex: 1, padding: 20, justifyContent: 'center' },
