@@ -61,6 +61,7 @@ export interface CustomGlossaryTerm {
   term: string;
   definition: string;
   cn: string;
+  example?: string;
 }
 
 export interface DailyProgress {

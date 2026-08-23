@@ -11,9 +11,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Colors } from '../constants/colors';
 import { GLOSSARY, GLOSSARY_CATEGORIES, GlossaryTerm } from '../constants/glossary';
-import { loadCustomGlossary, addCustomGlossary, deleteCustomGlossary } from '../lib/storage';
+import { loadCustomGlossary, addCustomGlossary, deleteCustomGlossary, CustomGlossaryTerm } from '../lib/storage';
 import { speakText } from '../lib/tts';
 import { useApp } from '../context/AppContext';
+
+function toGlossaryCustom(c: CustomGlossaryTerm): GlossaryTerm {
+  return {
+    term: c.term,
+    definition: c.definition,
+    cn: c.cn,
+    example: c.example ?? '',
+    category: 'Custom',
+  };
+}
 
 type Filter = 'All' | GlossaryTerm['category'] | 'Custom';
 
@@ -36,11 +46,12 @@ export default function Glossary() {
   const [addOpen, setAddOpen] = useState(false);
   const [newTerm, setNewTerm] = useState('');
   const [newDef, setNewDef] = useState('');
+  const [newExample, setNewExample] = useState('');
   const [newCn, setNewCn] = useState('');
 
   useEffect(() => {
     loadCustomGlossary().then((list) =>
-      setCustom(list.map((c) => ({ ...c, category: 'Custom' as GlossaryTerm['category'] }))),
+      setCustom(list.map(toGlossaryCustom)),
     );
   }, []);
 
@@ -77,15 +88,16 @@ export default function Glossary() {
     if (!term) return;
     const list = await addCustomGlossary({
       term, definition: newDef.trim() || '(your note)', cn: newCn.trim(),
+      example: newExample.trim(),
     });
-    setCustom(list.map((c) => ({ ...c, category: 'Custom' as GlossaryTerm['category'] })));
-    setNewTerm(''); setNewDef(''); setNewCn(''); setAddOpen(false);
+    setCustom(list.map(toGlossaryCustom));
+    setNewTerm(''); setNewDef(''); setNewExample(''); setNewCn(''); setAddOpen(false);
     setFilter('Custom');
   }
 
   async function handleDelete(term: string) {
     const list = await deleteCustomGlossary(term);
-    setCustom(list.map((c) => ({ ...c, category: 'Custom' as GlossaryTerm['category'] })));
+    setCustom(list.map(toGlossaryCustom));
   }
 
   return (
@@ -155,7 +167,23 @@ export default function Glossary() {
               {isFlipped ? (
                 <Text style={styles.cn}>{t.cn || '(no translation yet)'}</Text>
               ) : (
-                <Text style={styles.def}>{t.definition}</Text>
+                <>
+                  <Text style={styles.def}>{t.definition}</Text>
+                  {!!t.example && (
+                    <View style={styles.exampleBox}>
+                      <View style={styles.exampleTop}>
+                        <Text style={styles.exampleLabel}>EXAMPLE 例句</Text>
+                        <TouchableOpacity
+                          onPress={(e) => { e.stopPropagation?.(); speakText(t.example, slowMode); }}
+                          hitSlop={8}
+                        >
+                          <Text style={styles.exampleSpeaker}>🔊</Text>
+                        </TouchableOpacity>
+                      </View>
+                      <Text style={styles.example}>“{t.example}”</Text>
+                    </View>
+                  )}
+                </>
               )}
 
               <View style={styles.cardFoot}>
@@ -186,6 +214,8 @@ export default function Glossary() {
                 placeholder="Term (English), e.g. Drayage" placeholderTextColor={Colors.dim} autoFocus />
               <TextInput style={styles.input} value={newDef} onChangeText={setNewDef}
                 placeholder="Definition (optional)" placeholderTextColor={Colors.dim} multiline />
+              <TextInput style={styles.input} value={newExample} onChangeText={setNewExample}
+                placeholder="Example sentence 例句 (optional)" placeholderTextColor={Colors.dim} multiline />
               <TextInput style={styles.input} value={newCn} onChangeText={setNewCn}
                 placeholder="中文意思 (optional)" placeholderTextColor={Colors.dim} />
               <View style={styles.btns}>
@@ -254,6 +284,19 @@ const styles = StyleSheet.create({
   speaker: { fontSize: 16 },
   term: { fontSize: 18, fontWeight: '700', color: Colors.text, marginBottom: 6 },
   def: { fontSize: 13, color: Colors.muted, lineHeight: 19 },
+  exampleBox: {
+    marginTop: 10,
+    backgroundColor: Colors.bg,
+    borderRadius: 9,
+    borderLeftWidth: 2,
+    borderLeftColor: Colors.gold,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+  },
+  exampleTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 3 },
+  exampleLabel: { fontSize: 8, letterSpacing: 1, color: Colors.gold, fontWeight: '700' },
+  exampleSpeaker: { fontSize: 13 },
+  example: { fontSize: 12.5, color: Colors.text, fontStyle: 'italic', lineHeight: 18 },
   cn: { fontSize: 14, color: Colors.violet, lineHeight: 21 },
   cardFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
   flipHint: { fontSize: 10, color: Colors.dim },
