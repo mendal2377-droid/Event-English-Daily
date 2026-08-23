@@ -1,0 +1,142 @@
+// Industry jargon glossary — "行业黑话卡库".
+// Flashcards of the terms an overseas event/exhibition pro actually hears,
+// with a concise English definition and a Chinese meaning. Tap to flip, 🔊 to hear.
+
+export type GlossaryCategory =
+  | 'AV & Tech'
+  | 'Venue & Catering'
+  | 'Logistics'
+  | 'Business'
+  | 'Travel'
+  | 'Custom';
+
+export interface GlossaryTerm {
+  term: string;
+  definition: string; // concise English definition
+  cn: string;         // Chinese meaning
+  category: GlossaryCategory;
+}
+
+export const GLOSSARY: GlossaryTerm[] = [
+  // ── AV & Tech ─────────────────────────────────────────────────────────────
+  { term: 'Truss', category: 'AV & Tech',
+    definition: 'Metal framework hung from the ceiling or on columns, used to rig lighting, speakers, or LED walls.',
+    cn: '桁架 — 吊挂灯光、音响或LED屏的金属框架结构。' },
+  { term: 'Rigging Points', category: 'AV & Tech',
+    definition: 'Certified points in a venue\'s ceiling where equipment can be safely hung.',
+    cn: '吊挂点 — 场馆天花板上可安全悬挂设备的认证点位。' },
+  { term: 'Sightlines', category: 'AV & Tech',
+    definition: 'The audience\'s clear, unobstructed lines of view to the stage or screens.',
+    cn: '视线 — 观众看向舞台或屏幕的无遮挡视野。' },
+  { term: 'Confidence Monitor', category: 'AV & Tech',
+    definition: 'A screen facing the speaker showing their slides, notes, or a timer.',
+    cn: '提词屏 — 面向演讲者、显示幻灯片/备注/计时的屏幕。' },
+  { term: 'L-C-R', category: 'AV & Tech',
+    definition: 'A Left-Center-Right speaker setup that spreads sound evenly across a hall.',
+    cn: '左-中-右声道 — 让声音均匀覆盖全场的扬声器配置。' },
+  { term: 'Lavalier (Lav)', category: 'AV & Tech',
+    definition: 'A small clip-on microphone worn on clothing, hands-free.',
+    cn: '领夹麦 — 别在衣领上的小型免手持麦克风。' },
+  { term: 'Technical Rider', category: 'AV & Tech',
+    definition: 'A document listing a speaker\'s or act\'s exact technical requirements.',
+    cn: '技术清单 — 列明演讲者/演出方技术需求的文件。' },
+  { term: 'Dead-hang', category: 'AV & Tech',
+    definition: 'To hang equipment on a fixed point with no motor to move it.',
+    cn: '固定吊挂 — 用固定点悬挂设备、不带电动升降。' },
+  { term: 'Front Projection', category: 'AV & Tech',
+    definition: 'Projecting an image onto the front of a screen; needs ambient light controlled.',
+    cn: '正投 — 从正面投影到幕布，需控制环境光。' },
+  { term: 'Signal Flow', category: 'AV & Tech',
+    definition: 'The path a signal travels from source through the system to the output.',
+    cn: '信号流 — 信号从源头经系统到输出的传输路径。' },
+
+  // ── Venue & Catering ──────────────────────────────────────────────────────
+  { term: 'Banquet Event Order (BEO)', category: 'Venue & Catering',
+    definition: 'A master document from the venue detailing timing, setup, catering, and logistics for a room.',
+    cn: '宴会活动单 — 场馆出具、列明某场地时间/布置/餐饮/物流的主文件。' },
+  { term: 'F&B Minimum Spend', category: 'Venue & Catering',
+    definition: 'The minimum food-and-beverage spend a venue requires to secure a room.',
+    cn: '餐饮最低消费 — 为锁定场地所需达到的最低餐饮消费额。' },
+  { term: 'Covers', category: 'Venue & Catering',
+    definition: 'The number of guests being served a meal (e.g. "280 covers").',
+    cn: '餐位数 — 供餐的宾客人数（如“280 covers”）。' },
+  { term: 'Corkage', category: 'Venue & Catering',
+    definition: 'A fee charged by a venue for serving drinks you brought yourself.',
+    cn: '开瓶费 — 场馆为自带酒水提供服务收取的费用。' },
+  { term: 'Green Room', category: 'Venue & Catering',
+    definition: 'A private backstage lounge where speakers or talent wait and prepare.',
+    cn: '候场室 — 演讲者/嘉宾在后台等待与准备的私人休息室。' },
+  { term: 'Foyer', category: 'Venue & Catering',
+    definition: 'The open entrance/lobby area, often used for registration or receptions.',
+    cn: '门厅 — 入口/大堂区域，常用于签到或招待。' },
+  { term: 'Canapés', category: 'Venue & Catering',
+    definition: 'Small, bite-sized appetizers passed around during a reception.',
+    cn: '开胃小食 — 招待会上传递的一口大小小点心。' },
+  { term: 'Corkboard Capacity', category: 'Venue & Catering',
+    definition: 'The maximum number of guests a room holds for a given setup (seated, cocktail, etc.).',
+    cn: '容纳量 — 某种布置下（坐席、鸡尾酒会等）场地的最大宾客数。' },
+
+  // ── Logistics ─────────────────────────────────────────────────────────────
+  { term: 'Load-in', category: 'Logistics',
+    definition: 'The scheduled time to bring equipment and materials into the venue and set up.',
+    cn: '进场布置 — 将设备物料运入场馆并搭建的时段。' },
+  { term: 'Strike', category: 'Logistics',
+    definition: 'The teardown and removal of everything after the event ends.',
+    cn: '拆撤 — 活动结束后拆除并撤走所有物品。' },
+  { term: 'Drayage', category: 'Logistics',
+    definition: 'Handling and moving of exhibitor freight between the dock and the booth.',
+    cn: '展会物流搬运 — 参展货物在卸货区与展位间的搬运处理。' },
+  { term: 'ATA Carnet', category: 'Logistics',
+    definition: 'A customs document that lets goods enter a country temporarily, duty-free.',
+    cn: 'ATA单证册 — 允许货物临时免税入境的海关文件。' },
+  { term: 'ISPM-15', category: 'Logistics',
+    definition: 'The standard requiring wooden crates to be treated and stamped for international shipping.',
+    cn: 'ISPM-15 — 要求国际运输木箱经处理并加盖标识的标准。' },
+  { term: 'Manifest', category: 'Logistics',
+    definition: 'The itemized list of everything in a shipment, checked against on arrival.',
+    cn: '货物清单 — 列明一批货物内容、到货时核对的明细单。' },
+  { term: 'Hard Out', category: 'Logistics',
+    definition: 'A fixed, non-negotiable end time (e.g. a venue noise curfew).',
+    cn: '硬性结束时间 — 不可协商的固定收尾时间（如噪音宵禁）。' },
+  { term: 'Show-site Rate', category: 'Logistics',
+    definition: 'The higher price charged for orders placed on-site vs. in advance.',
+    cn: '现场价 — 现场下单相比提前预订的更高收费。' },
+
+  // ── Business ──────────────────────────────────────────────────────────────
+  { term: 'Lead Retrieval', category: 'Business',
+    definition: 'Scanning visitors\' badges at a booth to capture their contact details as sales leads.',
+    cn: '线索采集 — 在展位扫描访客胸卡以获取联系方式作为销售线索。' },
+  { term: 'Activation', category: 'Business',
+    definition: 'A live, interactive brand experience designed to engage guests.',
+    cn: '品牌互动装置 — 吸引宾客参与的现场互动品牌体验。' },
+  { term: 'Naming Rights', category: 'Business',
+    definition: 'A sponsorship where a brand\'s name is attached to an event, stage, or zone.',
+    cn: '冠名权 — 品牌名称冠于活动/舞台/区域的赞助形式。' },
+  { term: 'Touchpoint', category: 'Business',
+    definition: 'Any moment a guest interacts with the brand across the event.',
+    cn: '接触点 — 宾客在活动中与品牌互动的每个环节。' },
+  { term: 'Run of Show', category: 'Business',
+    definition: 'The minute-by-minute schedule of everything happening during an event.',
+    cn: '节目流程表 — 活动进行中每一分钟安排的详细时间表。' },
+  { term: 'Contingency', category: 'Business',
+    definition: 'A backup plan and reserved budget for when something goes wrong.',
+    cn: '应急预案 — 出问题时的备用方案与预留预算。' },
+
+  // ── Travel ────────────────────────────────────────────────────────────────
+  { term: 'ATA / Immigration', category: 'Travel',
+    definition: 'Passport control where you state your trip\'s purpose and duration on arrival.',
+    cn: '入境边检 — 到达时说明来访目的与停留时间的护照查验。' },
+  { term: 'Still vs Sparkling', category: 'Travel',
+    definition: 'In Europe, restaurants ask if you want flat ("still") or fizzy ("sparkling") water.',
+    cn: '无气/有气水 — 欧洲餐厅会问你要无气泡还是有气泡水。' },
+  { term: 'Shuttle', category: 'Travel',
+    definition: 'A regular free bus between a hotel and the exhibition centre.',
+    cn: '班车 — 往返酒店与展览中心的定时免费巴士。' },
+  { term: 'S-Bahn / U-Bahn', category: 'Travel',
+    definition: 'In Germany, the city rail (S-Bahn) and subway (U-Bahn) systems.',
+    cn: '城铁/地铁 — 德国的城市铁路（S-Bahn）与地铁（U-Bahn）。' },
+];
+
+export const GLOSSARY_CATEGORIES: GlossaryCategory[] = [
+  'AV & Tech', 'Venue & Catering', 'Logistics', 'Business', 'Travel',
+];

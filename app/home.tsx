@@ -180,6 +180,20 @@ export default function Home() {
           <Text style={styles.countdownArrow}>→</Text>
         </Pressable>
 
+        {/* Tools row: Glossary + Upgrade */}
+        <View style={styles.toolsRow}>
+          <Pressable style={styles.tool} onPress={() => router.push('/glossary')}>
+            <Text style={styles.toolIcon}>📇</Text>
+            <Text style={styles.toolTitle}>Glossary</Text>
+            <Text style={styles.toolSub}>{chineseAssist ? '行业黑话卡' : 'Jargon cards'}</Text>
+          </Pressable>
+          <Pressable style={styles.tool} onPress={() => router.push('/upgrade')}>
+            <Text style={styles.toolIcon}>✨</Text>
+            <Text style={styles.toolTitle}>Upgrade</Text>
+            <Text style={styles.toolSub}>{chineseAssist ? '话术变高级' : 'Phrase upgrade'}</Text>
+          </Pressable>
+        </View>
+
         {/* Industry pack row */}
         <View style={styles.packRow}>
           <Text style={styles.packLbl}>Pack:</Text>
@@ -392,4 +406,14 @@ const styles = StyleSheet.create({
   shadowIcon: { fontSize: 20 },
   shadowTitle: { fontSize: 13, fontWeight: '600', color: Colors.cyan },
   shadowSub: { fontSize: 10, color: Colors.muted, marginTop: 2 },
+
+  // Tools row (Glossary + Upgrade)
+  toolsRow: { flexDirection: 'row', gap: 10, marginHorizontal: 16, marginBottom: 12 },
+  tool: {
+    flex: 1, backgroundColor: '#9b7aff0c', borderWidth: 1, borderColor: '#9b7aff2c',
+    borderRadius: 12, paddingVertical: 12, paddingHorizontal: 12, alignItems: 'flex-start',
+  },
+  toolIcon: { fontSize: 20, marginBottom: 5 },
+  toolTitle: { fontSize: 13, fontWeight: '700', color: Colors.violet },
+  toolSub: { fontSize: 10, color: Colors.muted, marginTop: 1 },
 });

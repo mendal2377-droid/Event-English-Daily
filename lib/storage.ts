@@ -53,7 +53,15 @@ const KEYS = {
   plan: '@onstage/plan',
   deviceCheck: '@onstage/device_check_seen',
   daily: '@onstage/daily',
+  glossaryCustom: '@onstage/glossary_custom',
+  upgradeCount: '@onstage/upgrade_count',
 } as const;
+
+export interface CustomGlossaryTerm {
+  term: string;
+  definition: string;
+  cn: string;
+}
 
 export interface DailyProgress {
   /** ISO date (yyyy-mm-dd) the count is for */
@@ -180,6 +188,49 @@ async function incrementDailyProgress(): Promise<void> {
     KEYS.daily,
     JSON.stringify({ date: cur.date, count: cur.count + 1 }),
   );
+}
+
+// ── Glossary (custom terms) ─────────────────────────────────────────────────
+
+export async function loadCustomGlossary(): Promise<CustomGlossaryTerm[]> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.glossaryCustom);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function addCustomGlossary(t: CustomGlossaryTerm): Promise<CustomGlossaryTerm[]> {
+  const list = await loadCustomGlossary();
+  const next = [t, ...list.filter((x) => x.term !== t.term)];
+  await AsyncStorage.setItem(KEYS.glossaryCustom, JSON.stringify(next));
+  return next;
+}
+
+export async function deleteCustomGlossary(term: string): Promise<CustomGlossaryTerm[]> {
+  const list = await loadCustomGlossary();
+  const next = list.filter((x) => x.term !== term);
+  await AsyncStorage.setItem(KEYS.glossaryCustom, JSON.stringify(next));
+  return next;
+}
+
+// ── Upgrade engine achievements ─────────────────────────────────────────────
+
+export async function loadUpgradeCount(): Promise<number> {
+  try {
+    const raw = await AsyncStorage.getItem(KEYS.upgradeCount);
+    return raw ? parseInt(raw, 10) || 0 : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export async function incrementUpgradeCount(): Promise<number> {
+  const cur = await loadUpgradeCount();
+  const next = cur + 1;
+  await AsyncStorage.setItem(KEYS.upgradeCount, String(next));
+  return next;
 }
 
 export async function loadSession(id: string): Promise<SessionData | null> {

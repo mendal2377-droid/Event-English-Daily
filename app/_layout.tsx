@@ -30,6 +30,8 @@ export default function RootLayout() {
         <Stack.Screen name="shadow" />
         <Stack.Screen name="plan" />
         <Stack.Screen name="device-check" />
+        <Stack.Screen name="glossary" />
+        <Stack.Screen name="upgrade" />
         <Stack.Screen name="settings" />
         <Stack.Screen name="practice/[scenarioId]" />
         <Stack.Screen name="result/[sessionId]" />
