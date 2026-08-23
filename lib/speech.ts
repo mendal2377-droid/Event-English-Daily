@@ -1,14 +1,8 @@
-// Safe wrapper around expo-speech-recognition (on-device speech-to-text).
-//
-// Design goals:
-//  - Real voice input in a standalone / dev build (the APK).
-//  - NEVER crash where the native module is absent (Expo Go) or the device has
-//    no speech-recognition service (some China-ROM phones without Google apps).
-//    In those cases isVoiceSupported() returns false and callers fall back to
-//    the text sheet.
-//
-// Everything touches the native module lazily, inside try/catch, so simply
-// importing this file is always safe.
+// Speech-to-text wrapper.
+//  - Web: uses the browser's native Web Speech API (Chrome/Edge). Real voice
+//    input on a laptop. Falls back (returns false / errors) where unsupported.
+//  - Native (APK): uses expo-speech-recognition.
+// Everything is guarded so importing this file is always safe.
 
 import { Platform } from 'react-native';
 
@@ -16,6 +10,17 @@ type ResultHandler = (transcript: string, isFinal: boolean) => void;
 type ErrorHandler = (code: string, message: string) => void;
 
 interface Sub { remove: () => void }
+
+// ── Web (browser Web Speech API) ────────────────────────────────────────────
+
+function getWebSpeechCtor(): any {
+  if (typeof window === 'undefined') return null;
+  return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
+}
+
+let webRec: any = null;
+
+// ── Native (expo-speech-recognition) ────────────────────────────────────────
 
 let moduleCache: any;
 let moduleLoaded = false;
@@ -37,24 +42,18 @@ function getSR(): any {
   return m?.ExpoSpeechRecognitionModule ?? null;
 }
 
-/** True only when the device can actually do speech recognition right now. */
+// ── Public API ───────────────────────────────────────────────────────────────
+
+/** True only when the device/browser can actually do speech recognition now. */
 export function isVoiceSupported(): boolean {
-  // On the web, browser speech recognition is flaky (Chrome-only, needs mic
-  // permission, spotty transcription). Always use the reliable text sheet
-  // there; real voice input is for the installed app.
-  if (Platform.OS === 'web') return false;
+  if (Platform.OS === 'web') return !!getWebSpeechCtor();
+
   const m = getModule();
   if (!m) return false;
   try {
-    if (typeof m.isRecognitionAvailable === 'function') {
-      return !!m.isRecognitionAvailable();
-    }
+    if (typeof m.isRecognitionAvailable === 'function') return !!m.isRecognitionAvailable();
     const SR = getSR();
-    if (SR && typeof SR.isRecognitionAvailable === 'function') {
-      return !!SR.isRecognitionAvailable();
-    }
-    // Module present but no availability probe — assume usable, start() will
-    // surface any real error and we fall back then.
+    if (SR && typeof SR.isRecognitionAvailable === 'function') return !!SR.isRecognitionAvailable();
     return !!SR;
   } catch {
     return false;
@@ -62,6 +61,10 @@ export function isVoiceSupported(): boolean {
 }
 
 export async function ensureVoicePermission(): Promise<boolean> {
+  if (Platform.OS === 'web') {
+    // The browser prompts for the mic on recognition.start(); nothing to do here.
+    return true;
+  }
   const SR = getSR();
   if (!SR) return false;
   try {
@@ -83,15 +86,39 @@ function cleanup() {
   listeners = [];
 }
 
-/**
- * Start listening. Returns true if recognition actually started.
- * Falls back (returns false) on any failure so the caller can open text input.
- */
 export function startListening(handlers: {
   onResult: ResultHandler;
   onError: ErrorHandler;
   onEnd: () => void;
 }): boolean {
+  // ── Web ──
+  if (Platform.OS === 'web') {
+    const Ctor = getWebSpeechCtor();
+    if (!Ctor) return false;
+    try {
+      const rec = new Ctor();
+      rec.lang = 'en-US';
+      rec.interimResults = true;
+      rec.continuous = false;
+      rec.maxAlternatives = 1;
+      rec.onresult = (e: any) => {
+        let transcript = '';
+        for (let i = 0; i < e.results.length; i++) transcript += e.results[i][0].transcript;
+        const isFinal = !!e.results[e.results.length - 1]?.isFinal;
+        handlers.onResult(transcript, isFinal);
+      };
+      rec.onerror = (e: any) => handlers.onError(e?.error ?? 'error', e?.message ?? '');
+      rec.onend = () => handlers.onEnd();
+      rec.start();
+      webRec = rec;
+      return true;
+    } catch {
+      webRec = null;
+      return false;
+    }
+  }
+
+  // ── Native ──
   const SR = getSR();
   if (!SR) return false;
   try {
@@ -103,9 +130,7 @@ export function startListening(handlers: {
     listeners.push(SR.addListener('error', (e: any) => {
       handlers.onError(e?.error ?? 'error', e?.message ?? '');
     }));
-    listeners.push(SR.addListener('end', () => {
-      handlers.onEnd();
-    }));
+    listeners.push(SR.addListener('end', () => handlers.onEnd()));
     SR.start({
       lang: 'en-US',
       interimResults: true,
@@ -120,20 +145,27 @@ export function startListening(handlers: {
   }
 }
 
-/** Stop and let the final result come through the 'result'/'end' events. */
 export function stopListening(): void {
+  if (Platform.OS === 'web') {
+    try { webRec?.stop(); } catch { /* ignore */ }
+    return;
+  }
   const SR = getSR();
   try { SR?.stop?.(); } catch { /* ignore */ }
 }
 
-/** Cancel immediately, discard any result, remove listeners. */
 export function abortListening(): void {
+  if (Platform.OS === 'web') {
+    try { webRec?.abort?.(); } catch { /* ignore */ }
+    webRec = null;
+    return;
+  }
   const SR = getSR();
   try { SR?.abort?.(); } catch { /* ignore */ }
   cleanup();
 }
 
-/** Remove listeners without touching the recognizer (for unmount cleanup). */
 export function disposeListeners(): void {
+  if (Platform.OS === 'web') { webRec = null; return; }
   cleanup();
 }

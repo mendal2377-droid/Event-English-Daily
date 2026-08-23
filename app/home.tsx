@@ -109,13 +109,18 @@ export default function Home() {
           </View>
         </View>
 
-        {/* 30-Day Plan — the hero */}
+        {/* Hero: 30-day plan with the show countdown folded in */}
         {plan && planToday ? (
           <Pressable style={styles.planCard} onPress={() => router.push('/plan')}>
             <View style={styles.planTop}>
               <Text style={styles.planDay}>Day {planDay}</Text>
               <Text style={styles.planOf}>/ {PLAN_LENGTH}</Text>
               <View style={{ flex: 1 }} />
+              {daysLeft !== null && daysLeft >= 0 && (
+                <Text style={styles.planDays}>
+                  {daysLeft === 0 ? '🔥 show day' : `🎯 ${daysLeft}d to show`}
+                </Text>
+              )}
               <Text style={styles.planDone}>{planDone} done</Text>
             </View>
             <View style={styles.planBar}>
@@ -130,25 +135,8 @@ export default function Home() {
             {chineseAssist && <Text style={styles.planTodayCn}>{planToday.titleCn}</Text>}
             <Text style={styles.planCta}>Open plan →</Text>
           </Pressable>
-        ) : (
-          <Pressable style={styles.planStart} onPress={() => router.push('/plan')}>
-            <Text style={styles.planStartIcon}>🗓️</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.planStartTitle}>Start the 30-Day Speaking Plan</Text>
-              <Text style={styles.planStartSub}>
-                One task a day toward your show{chineseAssist ? ' · 30天口语冲刺，无需联网' : ''}
-              </Text>
-            </View>
-            <Text style={styles.countdownArrow}>→</Text>
-          </Pressable>
-        )}
-
-        {/* Show countdown — the retention engine */}
-        {focus && daysLeft !== null ? (
-          <Pressable
-            style={styles.countdown}
-            onPress={() => setFilter(focus.category)}
-          >
+        ) : focus && daysLeft !== null ? (
+          <Pressable style={styles.countdown} onPress={() => setFilter(focus.category)}>
             <Text style={styles.countdownDays}>
               {daysLeft === 0 ? '🔥 SHOW DAY' : `🎯 ${daysLeft} day${daysLeft === 1 ? '' : 's'}`}
             </Text>
@@ -162,44 +150,35 @@ export default function Home() {
             <Text style={styles.countdownArrow}>→</Text>
           </Pressable>
         ) : (
-          <Pressable style={styles.setShowRow} onPress={() => router.push('/settings')}>
-            <Text style={styles.setShowText}>🎯 Set your next show date — practice with a countdown</Text>
-            {chineseAssist && <Text style={styles.setShowCn}>设置你的下一场展会日期，倒计时练习</Text>}
+          <Pressable style={styles.planStart} onPress={() => router.push('/plan')}>
+            <Text style={styles.planStartIcon}>🗓️</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.planStartTitle}>Start the 30-Day Speaking Plan</Text>
+              <Text style={styles.planStartSub}>
+                One task a day toward your show{chineseAssist ? ' · 30天口语冲刺' : ''}
+              </Text>
+            </View>
+            <Text style={styles.countdownArrow}>→</Text>
           </Pressable>
         )}
 
-        {/* Shadowing drill entry */}
-        <Pressable style={styles.shadowRow} onPress={() => router.push('/shadow')}>
-          <Text style={styles.shadowIcon}>🗣️</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.shadowTitle}>Shadowing drill — 2 minutes</Text>
-            <Text style={styles.shadowSub}>
-              Listen and repeat pro phrases aloud{chineseAssist ? ' · 听一句跟读一句' : ''}
-            </Text>
-          </View>
-          <Text style={styles.countdownArrow}>→</Text>
-        </Pressable>
-
-        {/* Tools row: Glossary + Upgrade */}
+        {/* Compact tools row: Shadow · Glossary · Upgrade */}
         <View style={styles.toolsRow}>
+          <Pressable style={styles.tool} onPress={() => router.push('/shadow')}>
+            <Text style={styles.toolIcon}>🗣️</Text>
+            <Text style={styles.toolTitle}>Shadow</Text>
+            <Text style={styles.toolSub}>{chineseAssist ? '跟读' : '2-min'}</Text>
+          </Pressable>
           <Pressable style={styles.tool} onPress={() => router.push('/glossary')}>
             <Text style={styles.toolIcon}>📇</Text>
             <Text style={styles.toolTitle}>Glossary</Text>
-            <Text style={styles.toolSub}>{chineseAssist ? '行业黑话卡' : 'Jargon cards'}</Text>
+            <Text style={styles.toolSub}>{chineseAssist ? '黑话卡' : 'Jargon'}</Text>
           </Pressable>
           <Pressable style={styles.tool} onPress={() => router.push('/upgrade')}>
             <Text style={styles.toolIcon}>✨</Text>
             <Text style={styles.toolTitle}>Upgrade</Text>
-            <Text style={styles.toolSub}>{chineseAssist ? '话术变高级' : 'Phrase upgrade'}</Text>
+            <Text style={styles.toolSub}>{chineseAssist ? '变高级' : 'Polish'}</Text>
           </Pressable>
-        </View>
-
-        {/* Industry pack row */}
-        <View style={styles.packRow}>
-          <Text style={styles.packLbl}>Pack:</Text>
-          <Text style={styles.packActive}>🎪 Events ✓</Text>
-          <Text style={styles.packLocked}>💼 Sales 🔒</Text>
-          <Text style={styles.packLocked}>🏨 Hotels 🔒</Text>
         </View>
 
         {/* Category filters */}
@@ -371,6 +350,7 @@ const styles = StyleSheet.create({
   planDay: { fontSize: 20, fontWeight: '800', color: Colors.orange },
   planOf: { fontSize: 12, color: Colors.muted },
   planDone: { fontSize: 11, color: Colors.orange2, fontWeight: '600' },
+  planDays: { fontSize: 11, color: Colors.orange, fontWeight: '700', marginRight: 10 },
   planBar: {
     height: 5, backgroundColor: Colors.border, borderRadius: 3,
     overflow: 'hidden', marginTop: 10, marginBottom: 10,
