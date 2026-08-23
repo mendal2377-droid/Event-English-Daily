@@ -20,7 +20,10 @@ export function NavBar({
   const { chineseAssist } = useApp();
   return (
     <View style={styles.bar}>
-      <Text style={styles.logo}>◈ ON STAGE</Text>
+      <Pressable onPress={() => router.push('/home')} hitSlop={8}>
+        <Text style={styles.logo}>◈ ON STAGE</Text>
+        <Text style={styles.logoHint}>{chineseAssist ? '首页' : 'Home'}</Text>
+      </Pressable>
 
       <View style={styles.right}>
         {rightLabel && (
@@ -68,6 +71,7 @@ const styles = StyleSheet.create({
     color: Colors.orange,
     fontWeight: '600',
   },
+  logoHint: { fontSize: 8, color: Colors.dim, marginTop: 1 },
   right: {
     flexDirection: 'row',
     alignItems: 'center',

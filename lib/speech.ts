@@ -10,6 +10,8 @@
 // Everything touches the native module lazily, inside try/catch, so simply
 // importing this file is always safe.
 
+import { Platform } from 'react-native';
+
 type ResultHandler = (transcript: string, isFinal: boolean) => void;
 type ErrorHandler = (code: string, message: string) => void;
 
@@ -37,6 +39,10 @@ function getSR(): any {
 
 /** True only when the device can actually do speech recognition right now. */
 export function isVoiceSupported(): boolean {
+  // On the web, browser speech recognition is flaky (Chrome-only, needs mic
+  // permission, spotty transcription). Always use the reliable text sheet
+  // there; real voice input is for the installed app.
+  if (Platform.OS === 'web') return false;
   const m = getModule();
   if (!m) return false;
   try {
