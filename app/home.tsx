@@ -40,7 +40,7 @@ export default function Home() {
   const [progress, setProgress] = useState<WeekProgress | null>(null);
   const [plan, setPlan] = useState<PlanState | null>(null);
   const [daily, setDaily] = useState<DailyProgress | null>(null);
-  const { chineseAssist, apiMode, showDate, showName, dailyGoal } = useApp();
+  const { chineseAssist, apiMode, showDate, showName, dailyGoal, userName } = useApp();
 
   useEffect(() => {
     loadWeekProgress().then(setProgress);
@@ -54,6 +54,8 @@ export default function Home() {
 
   const dailyCount = daily?.count ?? 0;
   const dailyMet = dailyCount >= dailyGoal;
+  // Fresh user: no plan, nothing done yet → show first-run nudges
+  const isFresh = !plan && dailyCount === 0 && (progress?.sessions ?? 0) === 0;
 
   const planDay = plan ? Math.min(planDayNumber(plan.startDate), PLAN_LENGTH) : 0;
   const planToday = plan ? getPlanDay(planDay) : undefined;
@@ -86,27 +88,35 @@ export default function Home() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.eyebrow}>Choose your scenario</Text>
+          <Text style={styles.eyebrow}>
+            {userName ? `Hi, ${userName} 👋` : 'Choose your scenario'}
+          </Text>
           <Text style={styles.h1}>Practice Real <Text style={styles.h1Accent}>Work English</Text></Text>
           {chineseAssist && <Text style={styles.cnSub}>选择场景，开始练习真实工作英语</Text>}
           <Text style={styles.sub}>33 scenarios · tap mic to speak · get coached</Text>
 
           {/* Daily scene goal */}
-          <View style={styles.dailyRow}>
-            <View style={styles.dots}>
-              {Array.from({ length: Math.min(dailyGoal, 8) }).map((_, i) => (
-                <View
-                  key={i}
-                  style={[styles.dot, i < dailyCount && styles.dotFilled]}
-                />
-              ))}
-            </View>
-            <Text style={[styles.dailyText, dailyMet && styles.dailyTextMet]}>
-              {dailyMet
-                ? `✓ Daily goal done — ${dailyCount} today`
-                : `${dailyCount} / ${dailyGoal} scenes today`}
+          {isFresh ? (
+            <Text style={styles.firstRun}>
+              👋 Your first scene is waiting below{chineseAssist ? ' · 从下面第一个场景开始' : ''}
             </Text>
-          </View>
+          ) : (
+            <View style={styles.dailyRow}>
+              <View style={styles.dots}>
+                {Array.from({ length: Math.min(dailyGoal, 8) }).map((_, i) => (
+                  <View
+                    key={i}
+                    style={[styles.dot, i < dailyCount && styles.dotFilled]}
+                  />
+                ))}
+              </View>
+              <Text style={[styles.dailyText, dailyMet && styles.dailyTextMet]}>
+                {dailyMet
+                  ? `✓ Daily goal done — ${dailyCount} today`
+                  : `${dailyCount} / ${dailyGoal} scenes today`}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Hero: 30-day plan with the show countdown folded in */}
@@ -193,7 +203,12 @@ export default function Home() {
         {/* Scenario cards */}
         <View style={styles.cards}>
           {filtered.map((scenario, i) => (
-            <ScenarioCard key={scenario.id} scenario={scenario} featured={i === 0 && filter === 'All'} />
+            <ScenarioCard
+              key={scenario.id}
+              scenario={scenario}
+              featured={i === 0 && filter === 'All'}
+              startHere={isFresh && i === 0 && filter === 'All'}
+            />
           ))}
         </View>
 
@@ -247,6 +262,7 @@ const styles = StyleSheet.create({
   dotFilled: { backgroundColor: Colors.orange, borderColor: Colors.orange },
   dailyText: { fontSize: 11, color: Colors.muted, fontWeight: '600' },
   dailyTextMet: { color: Colors.green },
+  firstRun: { fontSize: 12, color: Colors.orange2, fontWeight: '600', marginTop: 12 },
   packRow: {
     flexDirection: 'row',
     alignItems: 'center',

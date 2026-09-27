@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { AppSettings, loadSettings, saveSettings } from '../lib/storage';
 
 interface AppContextValue {
+  userName: string;
+  setUserName: (val: string) => void;
   chineseAssist: boolean;
   setChineseAssist: (val: boolean) => void;
   apiMode: 'shared' | 'mock' | 'claude' | 'openai' | 'deepseek';
@@ -27,6 +29,7 @@ const AppContext = createContext<AppContextValue>({} as AppContextValue);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<AppSettings>({
+    userName: '',
     chineseAssist: true,
     apiMode: 'shared',
     apiKey: '',
@@ -56,6 +59,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppContext.Provider
       value={{
+        userName: settings.userName,
+        setUserName: (v) => updateSetting('userName', v),
         chineseAssist: settings.chineseAssist,
         setChineseAssist: (v) => updateSetting('chineseAssist', v),
         apiMode: settings.apiMode,

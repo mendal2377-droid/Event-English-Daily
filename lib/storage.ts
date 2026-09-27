@@ -10,6 +10,7 @@ export interface Phrase {
 }
 
 export interface AppSettings {
+  userName: string;
   chineseAssist: boolean;
   apiMode: 'shared' | 'mock' | 'claude' | 'openai' | 'deepseek';
   apiKey: string;
@@ -85,6 +86,7 @@ export interface PlanState {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
+  userName: '',
   chineseAssist: true,
   apiMode: 'shared',
   apiKey: '',

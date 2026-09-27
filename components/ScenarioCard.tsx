@@ -9,17 +9,21 @@ import { useApp } from '../context/AppContext';
 interface ScenarioCardProps {
   scenario: Scenario;
   featured?: boolean;
+  startHere?: boolean;
 }
 
-export function ScenarioCard({ scenario, featured }: ScenarioCardProps) {
+export function ScenarioCard({ scenario, featured, startHere }: ScenarioCardProps) {
   const router = useRouter();
   const { chineseAssist } = useApp();
 
   return (
     <Pressable
-      style={[styles.card, featured && styles.cardFeatured]}
+      style={[styles.card, (featured || startHere) && styles.cardFeatured, startHere && styles.cardStartHere]}
       onPress={() => router.push(`/practice/${scenario.id}`)}
     >
+      {startHere && (
+        <Text style={styles.startHere}>👇 START HERE{chineseAssist ? ' · 从这里开始' : ''}</Text>
+      )}
       <View style={styles.top}>
         <Text style={styles.icon}>{scenario.icon}</Text>
         <Badge category={scenario.category} />
@@ -46,6 +50,16 @@ const styles = StyleSheet.create({
   cardFeatured: {
     borderColor: '#ff6b2b26',
     backgroundColor: '#ff6b2b06',
+  },
+  cardStartHere: {
+    borderColor: Colors.orange,
+  },
+  startHere: {
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    color: Colors.orange,
+    marginBottom: 8,
   },
   top: {
     flexDirection: 'row',
