@@ -168,12 +168,12 @@ export async function saveSession(session: SessionData): Promise<void> {
   }
   // Count toward today's daily scene goal
   await incrementDailyProgress();
-  // If a 30-day plan is active, mark today's plan day complete
+  // If a 30-day plan is active, complete the current (next-unfinished) day.
   const plan = await loadPlan();
   if (plan) {
-    const today = planDayNumber(plan.startDate);
-    if (today <= 30 && !plan.completedDays.includes(today)) {
-      plan.completedDays = [...plan.completedDays, today].sort((a, b) => a - b);
+    const day = currentPlanDay(plan);
+    if (day <= 30 && !plan.completedDays.includes(day)) {
+      plan.completedDays = [...plan.completedDays, day].sort((a, b) => a - b);
       await AsyncStorage.setItem(KEYS.plan, JSON.stringify(plan));
     }
   }
@@ -316,6 +316,18 @@ export function planDayNumber(startDate: string): number {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const diff = Math.floor((today.getTime() - start.getTime()) / 86400000);
   return Math.max(1, diff + 1);
+}
+
+/**
+ * The day the user is actually ON — self-paced: the first day (1..30) they
+ * have NOT completed yet. Doing a session advances exactly one day, so the
+ * plan never jumps ahead just because calendar days passed.
+ */
+export function currentPlanDay(plan: PlanState): number {
+  for (let d = 1; d <= 30; d++) {
+    if (!plan.completedDays.includes(d)) return d;
+  }
+  return 30; // all done
 }
 
 export async function loadPlan(): Promise<PlanState | null> {

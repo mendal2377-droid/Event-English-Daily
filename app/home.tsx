@@ -8,7 +8,7 @@ import { Colors } from '../constants/colors';
 import { SCENARIOS, Category } from '../constants/scenarios';
 import { ScenarioCard } from '../components/ScenarioCard';
 import { NavBar } from '../components/ui/NavBar';
-import { loadWeekProgress, WeekProgress, loadPlan, planDayNumber, PlanState, loadDailyProgress, DailyProgress } from '../lib/storage';
+import { loadWeekProgress, WeekProgress, loadPlan, currentPlanDay, PlanState, loadDailyProgress, DailyProgress } from '../lib/storage';
 import { getPlanDay, PLAN_LENGTH } from '../constants/plan';
 import { useApp } from '../context/AppContext';
 
@@ -57,7 +57,7 @@ export default function Home() {
   // Fresh user: no plan, nothing done yet → show first-run nudges
   const isFresh = !plan && dailyCount === 0 && (progress?.sessions ?? 0) === 0;
 
-  const planDay = plan ? Math.min(planDayNumber(plan.startDate), PLAN_LENGTH) : 0;
+  const planDay = plan ? currentPlanDay(plan) : 0;
   const planToday = plan ? getPlanDay(planDay) : undefined;
   const planDone = plan?.completedDays.length ?? 0;
 

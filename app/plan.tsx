@@ -8,7 +8,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { Colors } from '../constants/colors';
 import { THIRTY_DAY_PLAN, PlanDay, PLAN_LENGTH } from '../constants/plan';
 import {
-  loadPlan, startPlan, resetPlan, markPlanDayDone, planDayNumber, PlanState,
+  loadPlan, startPlan, resetPlan, markPlanDayDone, currentPlanDay, PlanState,
 } from '../lib/storage';
 import { useApp } from '../context/AppContext';
 
@@ -29,7 +29,7 @@ export default function Plan() {
   // Re-check completion when returning from a practice session
   useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
 
-  const currentDay = plan ? Math.min(planDayNumber(plan.startDate), PLAN_LENGTH) : 0;
+  const currentDay = plan ? currentPlanDay(plan) : 0;
   const doneCount = plan?.completedDays.length ?? 0;
 
   async function handleStart() {
@@ -109,9 +109,9 @@ export default function Plan() {
               <View style={[styles.heroFill, { width: `${(doneCount / PLAN_LENGTH) * 100}%` }]} />
             </View>
             <Text style={styles.heroSub}>
-              {PLAN_LENGTH - currentDay > 0
-                ? `${PLAN_LENGTH - currentDay} days until showtime`
-                : 'Showtime — you\'re ready!'}
+              {doneCount < PLAN_LENGTH
+                ? `${PLAN_LENGTH - doneCount} tasks to go — one a day`
+                : 'All done — you\'re ready!'}
             </Text>
           </View>
 
